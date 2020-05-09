@@ -53,11 +53,11 @@ if [[ -z "${ZGEN_PREZTO_LOAD_DEFAULT}" ]]; then
 fi
 
 if [[ -z "${ZGEN_OH_MY_ZSH_REPO}" ]]; then
-    ZGEN_OH_MY_ZSH_REPO=robbyrussell
+    ZGEN_OH_MY_ZSH_REPO=ohmyzsh
 fi
 
 if [[ "${ZGEN_OH_MY_ZSH_REPO}" != */* ]]; then
-    ZGEN_OH_MY_ZSH_REPO="${ZGEN_OH_MY_ZSH_REPO}/oh-my-zsh"
+    ZGEN_OH_MY_ZSH_REPO="${ZGEN_OH_MY_ZSH_REPO}/ohmyzsh"
 fi
 
 if [[ -z "${ZGEN_OH_MY_ZSH_BRANCH}" ]]; then
