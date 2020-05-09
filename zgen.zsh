@@ -308,6 +308,9 @@ zgen-apply() {
         autoload -Uz compinit && \
             compinit $ZGEN_COMPINIT_FLAGS
     fi
+
+    -zgpute "Compiling ${ZGEN_INIT}";
+    zcompile "${ZGEN_INIT}";
 }
 
 -zgen-path-contains() {
