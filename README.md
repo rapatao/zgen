@@ -8,9 +8,9 @@ The motive for creating zgen was to have plugins quickly installed on a new mach
 
 ## Important
 
-Since the original repository looks like it was abandoned by the creator, I've forked to my personal repository to add a few improvements.
+All changes made here are tested on my workstations before being added to the repository and could work for you as well.
 
-All changes made here are tested on my workstations before being added to the repository. Keep in mind that all changes done here could work perfectly for your purposes, but I do not pretend to provide support for any kind of issues you could have when you use my version of `zgen`.
+Found an issue? Feel free to create a PR.
 
 ## Installation
 
