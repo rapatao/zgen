@@ -23,6 +23,10 @@ if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && -z "${(t)_comps}" ]]; then
     ZGEN_AUTOLOAD_COMPINIT=1
 fi
 
+if [[ -z "${ZGEN_COMPILE_INIT}" ]]; then
+    ZGEN_COMPILE_INIT=0
+fi
+
 if [[ -n "${ZGEN_CUSTOM_COMPDUMP}" ]]; then
     ZGEN_COMPINIT_DIR_FLAG="-d ${(q)ZGEN_CUSTOM_COMPDUMP}"
     ZGEN_COMPINIT_FLAGS="${ZGEN_COMPINIT_DIR_FLAG} ${ZGEN_COMPINIT_FLAGS}"
@@ -302,15 +306,18 @@ zgen-save() {
 zgen-apply() {
     fpath=(${(q)ZGEN_COMPLETIONS[@]} ${fpath})
 
+    rm -rf "${ZGEN_INIT}.zwc";
+    if [[ ${ZGEN_COMPILE_INIT} == 1 ]]; then
+        -zgpute 'Compiling `'"${ZGEN_INIT}"'` ...';
+        zcompile "${ZGEN_INIT}";
+    fi
+
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then
         -zgpute "Initializing completions ..."
 
         autoload -Uz compinit && \
             compinit $ZGEN_COMPINIT_FLAGS
     fi
-
-    -zgpute "Compiling ${ZGEN_INIT}";
-    zcompile "${ZGEN_INIT}";
 }
 
 -zgen-path-contains() {
