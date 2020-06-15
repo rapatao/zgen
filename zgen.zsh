@@ -210,7 +210,7 @@ zgen-init() {
 zgen-reset() {
     -zgpute 'Deleting `'"${ZGEN_INIT}"'` ...'
     if [[ -f "${ZGEN_INIT}" ]]; then
-        rm "${ZGEN_INIT}"
+        rm -rf "${ZGEN_INIT}"
     fi
     if [[ -f "${ZGEN_CUSTOM_COMPDUMP}" ]] || [[ -d "${ZGEN_CUSTOM_COMPDUMP}" ]]; then
         -zgpute 'Deleting `'"${ZGEN_CUSTOM_COMPDUMP}"'` ...'
