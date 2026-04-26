@@ -2,10 +2,10 @@
 # vim: set ft=zsh fenc=utf-8 noai ts=8 et sts=4 sw=0 tw=80 nowrap :
 local ZGEN_SOURCE="$0:A:h"
 
--zgputs() { printf %s\\n "$@" ;}
--zgpute() { printf %s\\n "-- zgen: $*" >&2 ;}
+function -zgputs() { printf '%s\n' "$@" ;}
+function -zgpute() { printf '%s\n' "-- zgen: $*" >&2 ;}
 
--zginit() { -zgputs "$*" >> "${ZGEN_INIT}" ;}
+function -zginit() { -zgputs "$*" >> "${ZGEN_INIT}" ;}
 
 
 if [[ -z "${ZGEN_DIR}" ]]; then
@@ -129,15 +129,17 @@ fi
     fi
 }
 
-zgen-clone() {
+function zgen-clone() {
     local repo="${1}"
     local branch="${2:-master}"
-    local url="$(-zgen-get-clone-url ${repo})"
-    local dir="$(-zgen-get-clone-dir ${repo} ${branch})"
+    local url
+    url=$(-zgen-get-clone-url "${repo}")
+    local dir
+    dir=$(-zgen-get-clone-dir "${repo}" "${branch}")
 
     if [[ ! -d "${dir}" ]]; then
-        mkdir -p "${dir}"
-        git clone --depth=1 --recursive -b "${branch}" "${url}" "${dir}"
+        mkdir -p "${dir}" || { -zgpute "Failed to create directory: ${dir}"; return 1; }
+        git clone --depth=1 --recursive -b "${branch}" "${url}" "${dir}" || { -zgpute "Failed to clone: ${repo}"; return 1; }
     fi
 }
 
@@ -303,8 +305,18 @@ zgen-save() {
     zgen-apply
 }
 
-zgen-apply() {
+function zgen-apply() {
+    # Ensure ZGEN_COMPLETIONS are in fpath
     fpath=(${(q)ZGEN_COMPLETIONS[@]} ${fpath})
+    # Remove duplicates
+    typeset -U fpath
+
+    # Ensure directories exist before calling compinit
+    local valid_fpath=()
+    for dir in $fpath; do
+        [[ -d "$dir" ]] && valid_fpath+=("$dir")
+    done
+    fpath=($valid_fpath)
 
     rm -rf "${ZGEN_INIT}.zwc";
     if [[ ${ZGEN_COMPILE_INIT} == 1 ]]; then
@@ -314,9 +326,11 @@ zgen-apply() {
 
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then
         -zgpute "Initializing completions ..."
-
-        autoload -Uz compinit && \
-            compinit $ZGEN_COMPINIT_FLAGS
+        # Only run compinit if we have valid directories
+        if [[ ${#fpath} -gt 0 ]]; then
+            autoload -Uz compinit && \
+                compinit $ZGEN_COMPINIT_FLAGS
+        fi
     fi
 }
 
@@ -396,19 +410,14 @@ zgen-load() {
     fi
 }
 
-zgen-loadall() {
-    # shameless copy from antigen
-
+function zgen-loadall() {
     # Bulk add many bundles at one go. Empty lines and lines starting with a `#`
-    # are ignored. Everything else is given to `zgen-load` as is, no
-    # quoting rules applied.
+    # are ignored. Everything else is given to `zgen-load` as is.
 
-    local line
-
-    grep '^[[:space:]]*[^[:space:]#]' | while read line; do
-        # Using `eval` so that we can use the shell-style quoting in each line
-        # piped to `antigen-bundles`.
-        eval "zgen-load $line"
+    while read -r line; do
+        [[ -z "${line##[[:space:]]#}" || "${line##[[:space:]]#}" == \#* ]] && continue
+        # Use zsh's native word splitting to handle arguments safely without eval
+        zgen-load $=line
     done
 }
 
