@@ -1,6 +1,6 @@
 #!/bin/zsh
 # vim: set ft=zsh fenc=utf-8 noai ts=8 et sts=4 sw=0 tw=80 nowrap :
-local ZGEN_SOURCE="$0:A:h"
+typeset -g ZGEN_SOURCE="$0:A:h"
 
 function -zgputs() { printf '%s\n' "$@" ;}
 function -zgpute() { printf '%s\n' "-- zgen: $*" >&2 ;}
@@ -19,7 +19,7 @@ fi
 # The user can explicitly disable Zgen attempting to invoke `compinit`, or it
 # will be automatically disabled if `compinit` appears to have already been
 # invoked.
-if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && -z "${(t)_comps}" ]]; then
+if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && ! $+_comps ]]; then
     ZGEN_AUTOLOAD_COMPINIT=1
 fi
 
