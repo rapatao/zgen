@@ -65,7 +65,7 @@ It's a good idea to load the base components before specifying any plugins.
 
     zgen prezto
 
-This will create a symlink in the `ZSHDOT` or `HOME` directory. This is needed by prezto.
+This clones prezto and loads its default modules.
 
 #### Load prezto plugins
 
@@ -77,7 +77,7 @@ This uses the Prezto method for loading modules.
 
     zgen pmodule <reponame> <branch>
 
-This uses the Prezto method for loading the module. It creates a symlink and calls `pmodule`.
+This uses the Prezto method for loading the module: it clones the repo and calls `pmodload`.
 
 #### Set prezto options
 
