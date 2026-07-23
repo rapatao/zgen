@@ -19,7 +19,7 @@ fi
 # The user can explicitly disable Zgen attempting to invoke `compinit`, or it
 # will be automatically disabled if `compinit` appears to have already been
 # invoked.
-if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && ! $+_comps ]]; then
+if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" ]] && (( ! $+_comps )); then
     ZGEN_AUTOLOAD_COMPINIT=1
 fi
 
@@ -147,7 +147,7 @@ function zgen-clone() {
     local completion_path="${1}"
 
     # Add the directory to ZGEN_COMPLETIONS array if not present
-    if [[ ! "${ZGEN_COMPLETIONS[@]}" =~ ${completion_path} ]]; then
+    if (( ! ${ZGEN_COMPLETIONS[(Ie)$completion_path]} )); then
         ZGEN_COMPLETIONS+=("${completion_path}")
     fi
 }
@@ -155,11 +155,11 @@ function zgen-clone() {
 -zgen-source() {
     local file="${1}"
 
-    if [[ ! "${ZGEN_LOADED[@]}" =~ "${file}" ]]; then
+    if (( ! ${ZGEN_LOADED[(Ie)$file]} )); then
         ZGEN_LOADED+=("${file}")
         source "${file}"
 
-        completion_path="${file:h}"
+        local completion_path="${file:h}"
 
         -zgen-add-to-fpath "${completion_path}"
     fi
@@ -198,7 +198,7 @@ function zgen-clone() {
     # execute in place
     eval $cmd
 
-    if [[ ! "${ZGEN_PREZTO[@]}" =~ "${cmd}" ]]; then
+    if (( ! ${ZGEN_PREZTO_LOAD[(Ie)$params]} )); then
         ZGEN_PREZTO_LOAD+=("${params[@]}")
     fi
 }
@@ -307,7 +307,7 @@ zgen-save() {
 
 function zgen-apply() {
     # Ensure ZGEN_COMPLETIONS are in fpath
-    fpath=(${(q)ZGEN_COMPLETIONS[@]} ${fpath})
+    fpath=(${ZGEN_COMPLETIONS[@]} ${fpath})
     # Remove duplicates
     typeset -U fpath
 
@@ -501,7 +501,7 @@ zgen() {
     if [[ -z "${cmd}" ]]; then
         -zgputs 'usage: `zgen [command | instruction] [options]`'
         -zgputs "    commands: list, saved, reset, clone, update, selfupdate"
-        -zgputs "    instructions: load, oh-my-zsh, pmodule, prezto, save, apply"
+        -zgputs "    instructions: load, loadall, oh-my-zsh, pmodule, prezto, save, apply"
         return 1
     fi
 
